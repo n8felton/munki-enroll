@@ -4,16 +4,20 @@ namespace CFPropertyList;
 require_once( 'cfpropertylist-2.0.1/CFPropertyList.php' );
 
 // Get the munki repo directory
-$plist          = new CFPropertyList( '/Library/Preferences/com.github.munki.plist' );
-$arrPref        = $plist->toArray();
-$munki_repo     = $arrPref['MUNKI_REPO'];
+$plist              = new CFPropertyList( '/Library/Preferences/com.github.munki.plist' );
+$arrPref            = $plist->toArray();
+$munki_repo         = $arrPref['MUNKI_REPO'];
 
 // Get the varibles passed by the enroll script
-$identifier     = $_GET["identifier"];
-$hostname       = $_GET["hostname"];
+$identifier         = $_GET["identifier"];
+$hostname           = $_GET["hostname"];
+
+// Set the path to the manifests
+$parent_manifest    = $munki_repo . '/manifests/' . $identifier
+$machine_manifest   = $munki_repo . '/manifests/' . $hostname
 
 // Check if manifest already exists for this machine
-if ( file_exists( $munki_repo . '/manifests/' . $hostname ) )
+if ( file_exists( $machine_manifest ) )
 {
     echo "Computer manifest already exists.";
 }
@@ -34,6 +38,6 @@ else
     $array->add( new CFString( $identifier ) );
 
     // Save the newly created plist
-    $plist->saveXML( $munki_repo . '/manifests/' . $hostname );
+    $plist->saveXML( $machine_manifest );
 }
 ?>
