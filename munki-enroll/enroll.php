@@ -45,7 +45,9 @@ function logToFile($message)
     global $logFile;
 	$date = date_create();
 	$timestamp = date_format($date, 'Y-m-d H:i:s');
-	$message = "[$timestamp] $message".PHP_EOL;
+	$remote_ip = $_SERVER['REMOTE_ADDR'];
+	$remote_hostname = gethostbyaddr($remote_ip);
+	$message = "[$timestamp] [$remote_hostname] [$remote_ip] $message".PHP_EOL;
     echo $message."<br/>";
     
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
