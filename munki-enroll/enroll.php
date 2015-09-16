@@ -29,41 +29,8 @@ function logToFile($message)
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
 }
 
-// Check if the parent/nested manifest exists
-if ( file_exists( $parent_manifest ) )
+function generateManifest($manifest, $identifier)
 {
-    logToFile("Parent manifest ($identifier) already exists.");
-}
-else
-{
-    logToFile("Parent manifest ($identifier) does not exist.");
-
-    // Create the new manifest plist
-    $plist = new CFPropertyList();
-    $plist->add( $dict = new CFDictionary() );
-
-    // Add manifest to production catalog by default
-    $dict->add( 'catalogs', $array = new CFArray() );
-    $array->add( new CFString( 'production' ) );
-
-    // Add parent manifest to included_manifests to achieve waterfall effect
-    $dict->add( 'included_manifests', $array = new CFArray() );
-    $array->add( new CFString( 'site_default' ) );
-
-    // Save the newly created plist
-    $plist->saveXML( $parent_manifest );
-}
-
-// Check if manifest already exists for this machine
-if ( file_exists( $machine_manifest ) )
-{
-    logToFile("Computer manifest ($hostname) already exists.");
-}
-else
-{
-    logToFile("Computer manifest ($hostname) does not exist.");
-
-    // Create the new manifest plist
     $plist = new CFPropertyList();
     $plist->add( $dict = new CFDictionary() );
 
@@ -76,6 +43,28 @@ else
     $array->add( new CFString( $identifier ) );
 
     // Save the newly created plist
-    $plist->saveXML( $machine_manifest );
+    $plist->saveXML( $manifest );
+}
+
+// Check if the parent/nested manifest exists
+if ( file_exists( $parent_manifest ) )
+{
+    logToFile("Parent manifest ($identifier) already exists.");
+}
+else
+{
+    logToFile("Parent manifest ($identifier) does not exist.");
+	generateManifest($parent_manifest, 'site_default');
+}
+
+// Check if manifest already exists for this machine
+if ( file_exists( $machine_manifest ) )
+{
+    logToFile("Computer manifest ($hostname) already exists.");
+}
+else
+{
+    logToFile("Computer manifest ($hostname) does not exist.");
+	generateManifest($machine_manifest, $identifier);
 }
 ?>
