@@ -66,7 +66,8 @@ function generateManifest($manifest_path, $identifier)
     $dict->add( 'included_manifests', $array = new CFArray() );
     $array->add( new CFString( $identifier ) );
 	
-	$manifest = end(explode('/',$manifest_path));
+	$tmp = explode('/',$manifest_path);
+	$manifest = end($tmp);
 	logToFile("Generating manifest '$manifest'...");
 	
     // Save the newly created plist
