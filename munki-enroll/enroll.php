@@ -1,6 +1,9 @@
 <?php
 namespace CFPropertyList;
 
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 require_once( 'cfpropertylist-2.0.1/CFPropertyList.php' );
 
 $logFile = "enroll.log";
@@ -11,55 +14,55 @@ $arrPref            = $plist->toArray();
 $munki_repo         = $arrPref['MUNKI_REPO'];
 
 // Get the varibles passed by the enroll script
-if ( isset( $_GET['hostname'] ) )
+if ( isset( $_GET['manifest'] ) )
 {
-	if ( $_GET['hostname'] == '' )
+	if ( $_GET['manifest'] == '' )
 	{
-		logToFile("Hostname variable is blank. Exiting...");
+		logToFile("Manifest variable is blank. Exiting...");
 		exit(1);
 	}
 	else
 	{
-		$hostname = $_GET['hostname'];
+		$manifest = $_GET['manifest'];
 	}
 }
-if ( isset( $_GET['identifier'] ) )
+if ( isset( $_GET['parent'] ) )
 {
-	if ( $_GET['identifier'] == '' )
+	if ( $_GET['parent'] == '' )
 	{
 		logToFile("Identifer is blank, using 'site_default'");
-		$identifier = 'site_default';
+		$parent = 'site_default';
 	}
 	else
 	{
-		$identifier = $_GET['identifier'];
+		$parent = $_GET['parent'];
 	}
 }
 
 // Set the path to the manifests
-$parent_manifest_path    = $munki_repo . '/manifests/' . $identifier;
-$machine_manifest_path   = $munki_repo . '/manifests/' . $hostname;
+$parent_manifest_path    = $munki_repo . '/manifests/' . $parent;
+$machine_manifest_path   = $munki_repo . '/manifests/' . $manifest;
 
 // Check if the parent/nested manifest exists
 if ( file_exists( $parent_manifest_path ) )
 {
-    logToFile("Parent manifest ($identifier) already exists.");
+    logToFile("Parent manifest ($parent) already exists.");
 }
 else
 {
-    logToFile("Parent manifest ($identifier) does not exist.");
+    logToFile("Parent manifest ($parent) does not exist.");
 	generateManifest($parent_manifest_path, 'site_default');
 }
 
 // Check if manifest already exists for this machine
 if ( file_exists( $machine_manifest_path ) )
 {
-    logToFile("Computer manifest ($hostname) already exists.");
+    logToFile("Computer manifest ($manifest) already exists.");
 }
 else
 {
-    logToFile("Computer manifest ($hostname) does not exist.");
-	generateManifest($machine_manifest_path, $identifier);
+    logToFile("Computer manifest ($manifest) does not exist.");
+	generateManifest($machine_manifest_path, $parent);
 }
 
 function logToFile($message)
@@ -75,7 +78,7 @@ function logToFile($message)
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
 }
 
-function generateManifest($manifest_path, $identifier)
+function generateManifest($manifest_path, $parent)
 {
     $plist = new CFPropertyList();
     $plist->add( $dict = new CFDictionary() );
@@ -86,7 +89,7 @@ function generateManifest($manifest_path, $identifier)
 
     // Add parent manifest to included_manifests to achieve waterfall effect
     $dict->add( 'included_manifests', $array = new CFArray() );
-    $array->add( new CFString( $identifier ) );
+    $array->add( new CFString( $parent ) );
 	
 	$tmp = explode('/',$manifest_path);
 	$manifest = end($tmp);
