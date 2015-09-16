@@ -15,8 +15,8 @@ $identifier         = $_GET["identifier"];
 $hostname           = $_GET["hostname"];
 
 // Set the path to the manifests
-$parent_manifest    = $munki_repo . '/manifests/' . $identifier
-$machine_manifest   = $munki_repo . '/manifests/' . $hostname
+$parent_manifest    = $munki_repo . '/manifests/' . $identifier;
+$machine_manifest   = $munki_repo . '/manifests/' . $hostname;
 
 function logToFile($message)
 {
