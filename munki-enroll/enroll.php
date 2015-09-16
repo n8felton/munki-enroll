@@ -15,8 +15,8 @@ $identifier         = isset($_GET["identifier"]) ? $_GET["identifier"] : 'site_d
 $hostname           = $_GET["hostname"];
 
 // Set the path to the manifests
-$parent_manifest    = $munki_repo . '/manifests/' . $identifier;
-$machine_manifest   = $munki_repo . '/manifests/' . $hostname;
+$parent_manifest_path    = $munki_repo . '/manifests/' . $identifier;
+$machine_manifest_path   = $munki_repo . '/manifests/' . $hostname;
 
 function logToFile($message)
 {
@@ -29,7 +29,7 @@ function logToFile($message)
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
 }
 
-function generateManifest($manifest, $identifier)
+function generateManifest($manifest_path, $identifier)
 {
     $plist = new CFPropertyList();
     $plist->add( $dict = new CFDictionary() );
@@ -41,30 +41,33 @@ function generateManifest($manifest, $identifier)
     // Add parent manifest to included_manifests to achieve waterfall effect
     $dict->add( 'included_manifests', $array = new CFArray() );
     $array->add( new CFString( $identifier ) );
-
+	
+	$manifest = end(explode('/',$manifest_path));
+	logToFile("Generating manifest '$manifest'...");
+	
     // Save the newly created plist
-    $plist->saveXML( $manifest );
+    $plist->saveXML( $manifest_path );
 }
 
 // Check if the parent/nested manifest exists
-if ( file_exists( $parent_manifest ) )
+if ( file_exists( $parent_manifest_path ) )
 {
     logToFile("Parent manifest ($identifier) already exists.");
 }
 else
 {
     logToFile("Parent manifest ($identifier) does not exist.");
-	generateManifest($parent_manifest, 'site_default');
+	generateManifest($parent_manifest_path, 'site_default');
 }
 
 // Check if manifest already exists for this machine
-if ( file_exists( $machine_manifest ) )
+if ( file_exists( $machine_manifest_path ) )
 {
     logToFile("Computer manifest ($hostname) already exists.");
 }
 else
 {
     logToFile("Computer manifest ($hostname) does not exist.");
-	generateManifest($machine_manifest, $identifier);
+	generateManifest($machine_manifest_path, $identifier);
 }
 ?>
