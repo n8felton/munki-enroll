@@ -40,6 +40,28 @@ if ( isset( $_GET['identifier'] ) )
 $parent_manifest_path    = $munki_repo . '/manifests/' . $identifier;
 $machine_manifest_path   = $munki_repo . '/manifests/' . $hostname;
 
+// Check if the parent/nested manifest exists
+if ( file_exists( $parent_manifest_path ) )
+{
+    logToFile("Parent manifest ($identifier) already exists.");
+}
+else
+{
+    logToFile("Parent manifest ($identifier) does not exist.");
+	generateManifest($parent_manifest_path, 'site_default');
+}
+
+// Check if manifest already exists for this machine
+if ( file_exists( $machine_manifest_path ) )
+{
+    logToFile("Computer manifest ($hostname) already exists.");
+}
+else
+{
+    logToFile("Computer manifest ($hostname) does not exist.");
+	generateManifest($machine_manifest_path, $identifier);
+}
+
 function logToFile($message)
 {
     global $logFile;
@@ -74,25 +96,4 @@ function generateManifest($manifest_path, $identifier)
     $plist->saveXML( $manifest_path );
 }
 
-// Check if the parent/nested manifest exists
-if ( file_exists( $parent_manifest_path ) )
-{
-    logToFile("Parent manifest ($identifier) already exists.");
-}
-else
-{
-    logToFile("Parent manifest ($identifier) does not exist.");
-	generateManifest($parent_manifest_path, 'site_default');
-}
-
-// Check if manifest already exists for this machine
-if ( file_exists( $machine_manifest_path ) )
-{
-    logToFile("Computer manifest ($hostname) already exists.");
-}
-else
-{
-    logToFile("Computer manifest ($hostname) does not exist.");
-	generateManifest($machine_manifest_path, $identifier);
-}
 ?>
