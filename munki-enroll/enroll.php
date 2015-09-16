@@ -11,8 +11,30 @@ $arrPref            = $plist->toArray();
 $munki_repo         = $arrPref['MUNKI_REPO'];
 
 // Get the varibles passed by the enroll script
-$identifier         = isset($_GET["identifier"]) ? $_GET["identifier"] : 'site_default';
-$hostname           = $_GET["hostname"];
+if ( isset( $_GET['hostname'] ) )
+{
+	if ( $_GET['hostname'] == '' )
+	{
+		logToFile("Hostname variable is blank. Exiting...");
+		exit(1);
+	}
+	else
+	{
+		$hostname = $_GET['hostname'];
+	}
+}
+if ( isset( $_GET['identifier'] ) )
+{
+	if ( $_GET['identifier'] == '' )
+	{
+		logToFile("Identifer is blank, using 'site_default'");
+		$identifier = 'site_default';
+	}
+	else
+	{
+		$identifier = $_GET['identifier'];
+	}
+}
 
 // Set the path to the manifests
 $parent_manifest_path    = $munki_repo . '/manifests/' . $identifier;
