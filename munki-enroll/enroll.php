@@ -21,23 +21,12 @@ $machine_manifest   = $munki_repo . '/manifests/' . $hostname;
 function logToFile($message)
 {
     global $logFile;
-    $message = $message.PHP_EOL;
+	$date = date_create();
+	$timestamp = date_format($date, 'Y-m-d H:i:s');
+	$message = "[$timestamp] $message".PHP_EOL;
     echo $message."<br/>";
     
-    // Code below from: http://stackoverflow.com/questions/3332262/how-do-i-prepend-file-to-beginning
-    $handle = fopen($logFile, "r+");
-    $len = strlen($message);
-    $final_len = filesize($logFile) + $len;
-    $cache_old = fread($handle, $len);
-    rewind($handle);
-    $i = 1;
-    while (ftell($handle) < $final_len) {
-      fwrite($handle, $message);
-      $message = $cache_old;
-      $cache_old = fread($handle, $len);
-      fseek($handle, $i * $len);
-      $i++;
-    }
+	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
 }
 
 // Check if the parent/nested manifest exists
