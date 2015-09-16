@@ -3,6 +3,8 @@ namespace CFPropertyList;
 
 require_once( 'cfpropertylist-2.0.1/CFPropertyList.php' );
 
+$logFile = "enroll.log";
+
 // Get the munki repo directory
 $plist              = new CFPropertyList( '/Library/Preferences/com.github.munki.plist' );
 $arrPref            = $plist->toArray();
@@ -16,14 +18,36 @@ $hostname           = $_GET["hostname"];
 $parent_manifest    = $munki_repo . '/manifests/' . $identifier
 $machine_manifest   = $munki_repo . '/manifests/' . $hostname
 
+function logToFile($message)
+{
+    global $logFile;
+    $message = $message.PHP_EOL;
+    echo $message."<br/>";
+    
+    // Code below from: http://stackoverflow.com/questions/3332262/how-do-i-prepend-file-to-beginning
+    $handle = fopen($logFile, "r+");
+    $len = strlen($message);
+    $final_len = filesize($logFile) + $len;
+    $cache_old = fread($handle, $len);
+    rewind($handle);
+    $i = 1;
+    while (ftell($handle) < $final_len) {
+      fwrite($handle, $message);
+      $message = $cache_old;
+      $cache_old = fread($handle, $len);
+      fseek($handle, $i * $len);
+      $i++;
+    }
+}
+
 // Check if the parent/nested manifest exists
 if ( file_exists( $parent_manifest ) )
 {
-    echo "Parent manifest already exists.";
+    logToFile("Parent manifest ($identifier) already exists.");
 }
 else
 {
-    echo "Parent manifest does not exist.";
+    logToFile("Parent manifest ($identifier) does not exist.");
 
     // Create the new manifest plist
     $plist = new CFPropertyList();
@@ -44,11 +68,11 @@ else
 // Check if manifest already exists for this machine
 if ( file_exists( $machine_manifest ) )
 {
-    echo "Computer manifest already exists.";
+    logToFile("Computer manifest ($hostname) already exists.");
 }
 else
 {
-    echo "Computer manifest does not exist.";
+    logToFile("Computer manifest ($hostname) does not exist.");
 
     // Create the new manifest plist
     $plist = new CFPropertyList();
