@@ -11,7 +11,7 @@ $arrPref            = $plist->toArray();
 $munki_repo         = $arrPref['MUNKI_REPO'];
 
 // Get the varibles passed by the enroll script
-$identifier         = $_GET["identifier"];
+$identifier         = isset($_GET["identifier"]) ? $_GET["identifier"] : 'site_default';
 $hostname           = $_GET["hostname"];
 
 // Set the path to the manifests
