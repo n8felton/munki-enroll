@@ -1,9 +1,6 @@
 <?php
 namespace CFPropertyList;
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-
 require_once( 'cfpropertylist-2.0.1/CFPropertyList.php' );
 
 $logFile = "enroll.log";
