@@ -48,7 +48,7 @@ if ( file_exists( $parent_manifest_path ) )
 else
 {
     logToFile("Parent manifest ($parent) does not exist.");
-	generateManifest($parent_manifest_path, 'site_default');
+	generateManifest($parent_manifest_path, 'default', '');
 }
 
 // Check if manifest already exists for this machine
@@ -59,7 +59,7 @@ if ( file_exists( $machine_manifest_path ) )
 else
 {
     logToFile("Computer manifest ($manifest) does not exist.");
-	generateManifest($machine_manifest_path, $parent);
+	generateManifest($machine_manifest_path, $parent, 'production');
 }
 
 function logToFile($message)
@@ -75,14 +75,17 @@ function logToFile($message)
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
 }
 
-function generateManifest($manifest_path, $parent)
+function generateManifest($manifest_path, $parent, $catalog)
 {
     $plist = new CFPropertyList();
     $plist->add( $dict = new CFDictionary() );
 
-    // Add manifest to production catalog by default
-    $dict->add( 'catalogs', $array = new CFArray() );
-    $array->add( new CFString( 'production' ) );
+    if ( $catalog != '' )
+	{
+		// Add manifest to production catalog by default
+		$dict->add( 'catalogs', $array = new CFArray() );
+		$array->add( new CFString( $catalog ) );
+	}
 
     // Add parent manifest to included_manifests to achieve waterfall effect
     $dict->add( 'included_manifests', $array = new CFArray() );
