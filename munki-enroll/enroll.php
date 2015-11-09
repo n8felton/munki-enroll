@@ -6,9 +6,9 @@ require_once( 'cfpropertylist-2.0.1/CFPropertyList.php' );
 $logFile = "enroll.log";
 
 // Get the munki repo directory
-$plist              = new CFPropertyList( '/Library/Preferences/com.github.munki.plist' );
-$arrPref            = $plist->toArray();
-$munki_repo         = $arrPref['MUNKI_REPO'];
+$plist      = new CFPropertyList( '/Library/Preferences/com.github.munki.plist' );
+$arrPref    = $plist->toArray();
+$munki_repo = $arrPref['MUNKI_REPO'];
 
 // Get the varibles passed by the enroll script
 if ( isset( $_GET['manifest'] ) )
