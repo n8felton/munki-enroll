@@ -33,6 +33,7 @@ if ( isset( $_GET['parent'] ) )
 	else
 	{
 		$parent = $_GET['parent'];
+		logToFile("BUKEY:".getMRBU($parent));
 	}
 }
 
@@ -73,6 +74,14 @@ function logToFile($message)
     echo $message."<br/>";
     
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
+}
+
+function getMRBU($bu)
+{
+	$bu = strtoupper($bu);
+	$mrbu = shell_exec('scripts/munkireport_bu_query.sh');
+	$arrMRBU = json_decode($mrbu, true);
+	return $arrMRBU[array_search($bu, array_column($arrMRBU, 'name'))]['keys'][0];
 }
 
 function generateManifest($manifest_path, $parent, $catalog)
