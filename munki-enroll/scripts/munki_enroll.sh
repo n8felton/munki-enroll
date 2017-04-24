@@ -5,7 +5,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 log() {
-	/bin/echo "$1" | /usr/bin/tee >(logger -t "$(basename "$0")")
+	/bin/echo "$@" | /usr/bin/tee >(logger -t "$(basename "$0")")
 }
 
 # MRBU - MunkiReport Business Unit. Set to 1 to use.
@@ -16,16 +16,16 @@ MANIFEST_URL="${REPO_URL}/manifests"
 ENROLL_URL="${BASE_URL}/munki-enroll/enroll.php"
 
 # Convert hostname to lowercase
-HOSTNAME=$( echo "$HOSTNAME" | tr '[:upper:]' '[:lower:]' );
+HOSTNAME=$( echo "${HOSTNAME}" | tr '[:upper:]' '[:lower:]' )
 
-# Convert hostname to manifest (short) name
-MANIFEST=$( echo "$HOSTNAME" | cut -d. -f1 );
+# Convert hostname to manifest (short) name; e.g. nrh-1065-01
+MANIFEST=${HOSTNAME%%.*}
 
-# Get identifier by splitting hostname on "-" character
-PARENT=$( echo "$HOSTNAME" | cut -d- -f1 );
+# Get identifier by splitting hostname on "-" character; e.g. nrh
+PARENT=${HOSTNAME%-*}
 
 if [[ "$HOSTNAME" == "$PARENT" ]]; then
-    log "Failed to determine parent manifest due to lack of a hyphen (-) in the hostname."
+    log "[38;5;9mFailed to determine parent manifest due to lack of a hyphen (-) in the hostname.[0m"
     exit 1
 else
     log "Manifest:  $MANIFEST"
