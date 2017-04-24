@@ -45,22 +45,26 @@ $machine_manifest_path   = $munki_repo . '/manifests/' . $manifest;
 if ( file_exists( $parent_manifest_path ) )
 {
     logToFile("Parent manifest ($parent) already exists.");
+	print getManifest($parent_manifest_path);
 }
 else
 {
     logToFile("Parent manifest ($parent) does not exist.");
 	generateManifest($parent_manifest_path, 'default', '');
+	print getManifest($parent_manifest_path);
 }
 
 // Check if manifest already exists for this machine
 if ( file_exists( $machine_manifest_path ) )
 {
     logToFile("Computer manifest ($manifest) already exists.");
+	print getManifest($machine_manifest_path);
 }
 else
 {
     logToFile("Computer manifest ($manifest) does not exist.");
 	generateManifest($machine_manifest_path, $parent, 'production');
+	print getManifest($machine_manifest_path);
 }
 
 function logToFile($message)
@@ -71,7 +75,6 @@ function logToFile($message)
 	$remote_ip = $_SERVER['REMOTE_ADDR'];
 	$remote_hostname = gethostbyaddr($remote_ip);
 	$message = "[$timestamp] [$remote_hostname] [$remote_ip] $message".PHP_EOL;
-    echo $message."<br/>";
     
 	file_put_contents($logFile, $message, FILE_APPEND|LOCK_EX);
 }
@@ -106,6 +109,11 @@ function generateManifest($manifest_path, $parent, $catalog)
 	
     // Save the newly created plist
     $plist->saveXML( $manifest_path );
+}
+
+function getManifest($manifest_path)
+{
+	return file_get_contents($manifest_path);
 }
 
 ?>
