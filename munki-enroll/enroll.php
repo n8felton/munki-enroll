@@ -108,7 +108,7 @@ function generateManifest($manifest_path, $parent, $catalog)
 	logToFile("Generating manifest '$manifest'...");
 	
     // Save the newly created plist
-    $plist->saveXML( $manifest_path );
+    $plist->saveXML( $manifest_path, True );
 }
 
 function getManifest($manifest_path)
